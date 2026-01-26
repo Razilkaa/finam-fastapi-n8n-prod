@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: fastapi_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - internal
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Europe/Moscow
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - internal
+    depends_on:
+      - api
+
+networks:
+  internal:
+
+volumes:
+  n8n_data:
