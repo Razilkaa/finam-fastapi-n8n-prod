@@ -18,7 +18,7 @@ from app.utils.date_utils import (
     parse_time_for_sort,
     format_time_display,
 )
-from app.utils.text_utils import sanitize_text
+from app.utils.text_utils import sanitize_text, convert_month_suffix_to_ru
 from app.utils.constants import (
     FONT_HEADER,
     FONT_DATE,
@@ -229,11 +229,16 @@ def fill_worksheet(
                 key_val = int(key_val) if key_val.lstrip("-").isdigit() else 0
             is_important = (key_val == 1)
             
+            event_text = ev.get("event", "")
+            # Для русского календаря конвертируем английские месяцы в русские
+            if lang == "ru":
+                event_text = convert_month_suffix_to_ru(event_text)
+            
             write_event_row(
                 ws, current_row,
                 ev.get("time", ""),
                 ev.get("country", ""),
-                ev.get("event", ""),
+                event_text,
                 is_important=is_important,
                 is_last=is_last_event,
                 tracker=tracker

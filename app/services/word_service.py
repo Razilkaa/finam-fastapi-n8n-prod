@@ -18,6 +18,7 @@ from app.utils.date_utils import (
     parse_time_for_sort,
 )
 from app.utils.constants import COUNTRY_NAMES_RU, COUNTRY_NAMES_EN
+from app.utils.text_utils import convert_month_suffix_to_ru
 
 
 # Дни недели
@@ -77,12 +78,15 @@ def format_event_line(time_str: str, country: str, event: str, lang: str) -> str
     country_names = COUNTRY_NAMES_RU if lang == "ru" else COUNTRY_NAMES_EN
     country_display = country_names.get(country, country)
     
+    # Для русского языка конвертируем английские месяцы в русские
+    event_text = convert_month_suffix_to_ru(event) if lang == "ru" else event
+    
     time_24 = convert_to_24h(time_str)
     
     if time_24:
-        return f"{time_24} – {country_display}: {event}"
+        return f"{time_24} – {country_display}: {event_text}"
     else:
-        return f"{country_display}: {event}"
+        return f"{country_display}: {event_text}"
 
 
 def format_holiday_line(holidays: list[dict], lang: str) -> str:
