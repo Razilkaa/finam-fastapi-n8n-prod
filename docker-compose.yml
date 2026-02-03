@@ -7,6 +7,10 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
+    environment:
+      WORD_TEMPLATE_PATH: /data/Template.docx
+    volumes:
+      - ./volumes/word-template:/data
     networks:
       - internal
 

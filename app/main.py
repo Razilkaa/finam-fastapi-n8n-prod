@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 from app.core.config import APP_TITLE, APP_DESCRIPTION, APP_VERSION
 from app.api.v1.endpoints import calendar
+from app.api.v1.endpoints import template
 
 app = FastAPI(
     title=APP_TITLE,
@@ -11,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(calendar.router)
+app.include_router(template.router)
 
 
 @app.get("/")
@@ -25,5 +27,8 @@ async def root():
             "GET /api/calendar/generate-word": "Генерация Word файла из шаблона",
             "GET /api/calendar/status": "Статус данных",
             "POST /api/calendar/clear": "Очистка данных",
+            "GET /api/template": "Template info",
+            "POST /api/template": "Upload new Word template (.docx)",
+            "GET /api/template/download": "Download current Word template (.docx)",
         }
     }

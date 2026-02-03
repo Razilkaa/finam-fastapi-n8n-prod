@@ -7,7 +7,7 @@ from app.services.data_store import data_store
 from app.services.calendar_service import split_events_data
 from app.services.excel_service import generate_excel
 from app.services.word_service import generate_word, get_output_filename
-from app.core.config import WORD_TEMPLATE_PATH
+from app.services.template_service import get_template_path
 from app.utils.date_utils import group_items_by_date, choose_reference_monday
 
 router = APIRouter(prefix="/api/calendar", tags=["calendar"])
@@ -76,19 +76,17 @@ async def generate_calendar():
 async def generate_word_calendar():
     """Генерация Word документа из шаблона."""
     try:
-        if not WORD_TEMPLATE_PATH.exists():
-            raise HTTPException(
-                status_code=404,
-                detail=f"Word template not found: {WORD_TEMPLATE_PATH}. "
-                       f"Mount Template.docx to /app/Template.docx or set WORD_TEMPLATE_PATH env var."
-            )
+        try:
+            template_path = get_template_path()
+        except FileNotFoundError as e:
+            raise HTTPException(status_code=404, detail=str(e))
         
         buffer = generate_word(
             work_en=data_store["work_en"],
             work_ru=data_store["work_ru"],
             holidays_en=data_store["holidays_en"],
             holidays_ru=data_store["holidays_ru"],
-            template_path=WORD_TEMPLATE_PATH,
+            template_path=template_path,
         )
         
         filename = get_output_filename(
