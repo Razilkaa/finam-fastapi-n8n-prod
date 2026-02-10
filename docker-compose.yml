@@ -5,21 +5,13 @@ services:
     build: .
     container_name: fastapi_api
     restart: unless-stopped
-    ports:
-      - "8000:8000"
-    environment:
-      WORD_TEMPLATE_PATH: /data/Template.docx
-    volumes:
-      - ./volumes/word-template:/data
-    networks:
-      - internal
+    network_mode: host
 
   n8n:
     image: n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
-    ports:
-      - "5678:5678"
+    network_mode: host
     environment:
       N8N_HOST: localhost
       N8N_PORT: 5678
@@ -29,8 +21,6 @@ services:
       GENERIC_TIMEZONE: Europe/Moscow
     volumes:
       - n8n_data:/home/node/.n8n
-    networks:
-      - internal
     depends_on:
       - api
       - playwright-mcp
@@ -41,13 +31,7 @@ services:
     entrypoint: ["node", "cli.js"]
     command: ["--headless", "--browser", "chromium", "--no-sandbox", "--port", "8931"]
     restart: unless-stopped
-    ports:
-      - "8931:8931"
-    networks:
-      - internal
-
-networks:
-  internal:
+    network_mode: host
 
 volumes:
   n8n_data:
