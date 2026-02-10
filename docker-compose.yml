@@ -33,6 +33,18 @@ services:
       - internal
     depends_on:
       - api
+      - playwright-mcp
+
+  playwright-mcp:
+    image: mcr.microsoft.com/playwright/mcp
+    container_name: playwright-mcp
+    entrypoint: ["node", "cli.js"]
+    command: ["--headless", "--browser", "chromium", "--no-sandbox", "--port", "8931"]
+    restart: unless-stopped
+    ports:
+      - "8931:8931"
+    networks:
+      - internal
 
 networks:
   internal:
