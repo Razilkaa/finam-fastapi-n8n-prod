@@ -39,6 +39,16 @@ from app.utils.constants import (
 )
 
 
+def should_highlight_event(event_text: str, lang: str) -> bool:
+    """Returns True when event should be shown in red."""
+    text = (event_text or "").casefold()
+    if lang == "ru":
+        return "ввп" in text
+    if lang == "en":
+        return "gdp" in text
+    return False
+
+
 class ColumnWidthTracker:
     """Отслеживает максимальную ширину для каждой колонки."""
     def __init__(self):
@@ -106,7 +116,7 @@ def write_date_row(ws: Worksheet, row: int, date_text: str, is_first: bool, trac
 
 
 def write_event_row(ws: Worksheet, row: int, time_str, country, event,
-                    is_important: bool, is_last: bool, tracker: ColumnWidthTracker):
+                    highlight: bool, is_last: bool, tracker: ColumnWidthTracker):
     """Запись строки события."""
     cell_c = ws.cell(row, 3)
     cell_d = ws.cell(row, 4)
@@ -124,7 +134,7 @@ def write_event_row(ws: Worksheet, row: int, time_str, country, event,
     tracker.update(4, country_safe)
     tracker.update(5, event_safe)
     
-    if is_important:
+    if highlight:
         cell_c.font = FONT_TIME_RED
         cell_d.font = FONT_EVENT_RED
         cell_e.font = FONT_EVENT_RED
@@ -224,22 +234,17 @@ def fill_worksheet(
         for j, ev in enumerate(day_events):
             is_last_event = (j == len(day_events) - 1) and is_last_day
             
-            key_val = ev.get("Key", 0)
-            if isinstance(key_val, str):
-                key_val = int(key_val) if key_val.lstrip("-").isdigit() else 0
-            is_important = (key_val == 1)
-            
             event_text = ev.get("event", "")
             # Для русского календаря конвертируем английские месяцы в русские
             if lang == "ru":
                 event_text = convert_month_suffix_to_ru(event_text)
-            
+
             write_event_row(
                 ws, current_row,
                 ev.get("time", ""),
                 ev.get("country", ""),
                 event_text,
-                is_important=is_important,
+                highlight=should_highlight_event(event_text, lang),
                 is_last=is_last_event,
                 tracker=tracker
             )
