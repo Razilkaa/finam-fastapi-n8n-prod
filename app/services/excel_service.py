@@ -1,4 +1,5 @@
 """Excel document generation service."""
+import re
 from datetime import date
 from io import BytesIO
 from typing import Optional
@@ -39,13 +40,48 @@ from app.utils.constants import (
 )
 
 
-def should_highlight_event(event_text: str, lang: str) -> bool:
+_RU_RATE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(?<!\w)цб(?!\w)"),
+    re.compile(r"(?<!\w)ецб(?!\w)"),
+    re.compile(r"ключев\w*\s+ставк\w*"),
+    re.compile(r"базов\w*\s+ставк\w*"),
+    re.compile(r"годов\w*\s+ставк\w*"),
+    re.compile(r"процентн\w*\s+ставк\w*"),
+    re.compile(r"проц\.?\s*ставк\w*"),
+)
+
+_EN_RATE_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"\binterest\s+rate\b"),
+    re.compile(r"\bloan\s+prime\s+rate\b"),
+)
+
+
+def should_highlight_event(event_text: str, lang: str, country: str) -> bool:
     """Returns True when event should be shown in red."""
     text = (event_text or "").casefold()
+    country_upper = (country or "").strip().upper()
+
+    # US-only labor market highlights.
+    if country_upper == "US":
+        if lang == "ru":
+            if "изменение числа занятых вне с/х сектора" in text:
+                return True
+            if "уровень безработицы" in text:
+                return True
+        if lang == "en":
+            if "nonfarm payrolls" in text:
+                return True
+            if "unemployment rate" in text:
+                return True
+
     if lang == "ru":
-        return "ввп" in text
+        if "ввп" in text:
+            return True
+        return any(p.search(text) for p in _RU_RATE_PATTERNS)
     if lang == "en":
-        return "gdp" in text
+        if "gdp" in text:
+            return True
+        return any(p.search(text) for p in _EN_RATE_PATTERNS)
     return False
 
 
@@ -244,7 +280,7 @@ def fill_worksheet(
                 ev.get("time", ""),
                 ev.get("country", ""),
                 event_text,
-                highlight=should_highlight_event(event_text, lang),
+                highlight=should_highlight_event(event_text, lang, ev.get("country", "")),
                 is_last=is_last_event,
                 tracker=tracker
             )
