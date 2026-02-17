@@ -69,7 +69,8 @@ def should_highlight_event(event_text: str, lang: str, country: str) -> bool:
             if "уровень безработицы" in text:
                 return True
         if lang == "en":
-            if "nonfarm payrolls" in text:
+            # Accept both "nonfarm" and "non farm" spellings.
+            if "nonfarm payrolls" in text or "non farm payrolls" in text:
                 return True
             if "unemployment rate" in text:
                 return True
