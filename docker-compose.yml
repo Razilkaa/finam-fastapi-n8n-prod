@@ -34,9 +34,26 @@ services:
       - internal
     depends_on:
       - api
+      - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: quotes
+      POSTGRES_USER: quotes_user
+      POSTGRES_PASSWORD: quotes_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+    ports:
+      - "5432:5432"
 
 networks:
   internal:
 
 volumes:
   n8n_data:
+  pgdata:
