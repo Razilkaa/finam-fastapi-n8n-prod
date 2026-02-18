@@ -115,3 +115,5 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 - `WORD_TEMPLATE_PATH` — путь к шаблону календаря (по умолчанию: `/app/Template.docx`)
 - `QUOTES_TEMPLATE_PATH` — путь к шаблону котировок (по умолчанию: `/app/Template_quotes.docx`)
+
+Примечание по Docker Compose: в `docker-compose.yml` оба пути указывают на `/data/...`, а `/data` — это bind mount на `./volumes/word-template`. Это значит, что при запуске через Docker активные шаблоны находятся в `main_prod/volumes/word-template`, а файлы `main_prod/Template*.docx` используются как дефолтные (для сборки образа и первичного копирования в volume, если файлов там ещё нет).
