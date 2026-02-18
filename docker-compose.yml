@@ -9,6 +9,7 @@ services:
       - "8000:8000"
     environment:
       WORD_TEMPLATE_PATH: /data/Template.docx
+      QUOTES_TEMPLATE_PATH: /data/Template_quotes.docx
     volumes:
       - ./volumes/word-template:/data
     networks:
