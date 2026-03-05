@@ -5,6 +5,7 @@ from app.core.config import APP_TITLE, APP_DESCRIPTION, APP_VERSION
 from app.api.v1.endpoints import calendar
 from app.api.v1.endpoints import template
 from app.api.v1.endpoints import quotes
+from app.api.v1.endpoints import quotes_all
 
 app = FastAPI(
     title=APP_TITLE,
@@ -15,6 +16,7 @@ app = FastAPI(
 app.include_router(calendar.router)
 app.include_router(template.router)
 app.include_router(quotes.router)
+app.include_router(quotes_all.router)
 
 
 @app.get("/")
@@ -38,5 +40,11 @@ async def root():
             "GET /api/quotes/template": "Информация о шаблоне котировок",
             "POST /api/quotes/template": "Загрузить новый шаблон котировок (.docx)",
             "GET /api/quotes/template/download": "Скачать текущий шаблон котировок (.docx)",
+            "GET /api/quotes_all/status": "Статус котировок (quotes_all)",
+            "POST /api/quotes_all/receive": "Приём котировок (quotes_all) (JSON)",
+            "GET /api/quotes_all/daily/word": "Сформировать Word-документ (quotes_all) с котировками",
+            "GET /api/quotes_all/template": "Информация о шаблоне (quotes_all) котировок",
+            "POST /api/quotes_all/template": "Загрузить новый шаблон (quotes_all) котировок (.docx)",
+            "GET /api/quotes_all/template/download": "Скачать текущий шаблон (quotes_all) котировок (.docx)",
         }
     }

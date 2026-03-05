@@ -2,7 +2,8 @@
 
 FastAPI-приложение для:
 - генерации экономического календаря в форматах Excel и Word;
-- приёма котировок и формирования ежедневного Word-документа по шаблону.
+- приёма котировок и формирования ежедневного Word-документа по шаблону;
+- приёма расширенных котировок (quotes_all) и формирования Word по шаблону Template_quotes_all.docx.
 
 Также поддерживается обновление Word-шаблонов через API без перезапуска сервиса.
 
@@ -45,6 +46,7 @@ main_prod/
 │       └── text_utils.py
 ├── Template.docx                      # Шаблон Word (календарь)
 ├── Template_quotes.docx               # Шаблон Word (котировки)
+├── Template_quotes_all.docx           # quotes_all (в volumes/word-template или POST /api/quotes_all/template)
 ├── Dockerfile
 ├── docker-compose.yml
 └── requirements.txt
@@ -111,9 +113,19 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 - `POST /api/quotes/template` — загрузить новый шаблон котировок (`.docx`)
 - `GET /api/quotes/template/download` — скачать текущий шаблон котировок (`.docx`)
 
+### Котировки quotes_all
+
+- `GET /api/quotes_all/status` — статус котировок
+- `POST /api/quotes_all/receive` — приём JSON с котировками
+- `GET /api/quotes_all/daily/word` — сформировать Word-документ
+- `GET /api/quotes_all/template` — информация о шаблоне
+- `POST /api/quotes_all/template` — загрузить новый шаблон (`.docx`)
+- `GET /api/quotes_all/template/download` — скачать текущий шаблон
+
 ## Переменные окружения
 
 - `WORD_TEMPLATE_PATH` — путь к шаблону календаря (по умолчанию: `/app/Template.docx`)
 - `QUOTES_TEMPLATE_PATH` — путь к шаблону котировок (по умолчанию: `/app/Template_quotes.docx`)
+- `QUOTES_ALL_TEMPLATE_PATH` — путь к шаблону quotes_all (по умолчанию: `/app/Template_quotes_all.docx`)
 
 Примечание по Docker Compose: в `docker-compose.yml` оба пути указывают на `/data/...`, а `/data` — это bind mount на `./volumes/word-template`. Это значит, что при запуске через Docker активные шаблоны находятся в `main_prod/volumes/word-template`, а файлы `main_prod/Template*.docx` используются как дефолтные (для сборки образа и первичного копирования в volume, если файлов там ещё нет).

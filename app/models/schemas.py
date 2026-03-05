@@ -40,6 +40,8 @@ class QuoteItem(BaseModel):
     old_price: Optional[float | int | str] = None
     new_price: Optional[float | int | str] = None
     pct_change: Optional[float | int | str] = None
+    change_value: Optional[float | int | str] = None
+    change_unit: Optional[str] = None
     report_date: Optional[str] = None
 
 

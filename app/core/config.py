@@ -18,6 +18,17 @@ _default_quotes_template_path = (
 )
 QUOTES_TEMPLATE_PATH = Path(os.getenv("QUOTES_TEMPLATE_PATH", _default_quotes_template_path))
 
+# Quotes_all Word template
+QUOTES_ALL_TEMPLATE_FALLBACK_PATH = BASE_DIR / "Template_quotes_all.docx"
+_default_quotes_all_template_path = (
+    str(QUOTES_ALL_TEMPLATE_FALLBACK_PATH)
+    if os.name == "nt"
+    else "/app/Template_quotes_all.docx"
+)
+QUOTES_ALL_TEMPLATE_PATH = Path(
+    os.getenv("QUOTES_ALL_TEMPLATE_PATH", _default_quotes_all_template_path)
+)
+
 # Настройки приложения
 APP_TITLE = "Calendar Generator API"
 APP_DESCRIPTION = "API для генерации экономического календаря"
