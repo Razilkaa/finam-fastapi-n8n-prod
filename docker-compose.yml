@@ -10,6 +10,7 @@ services:
     environment:
       WORD_TEMPLATE_PATH: /data/Template.docx
       QUOTES_TEMPLATE_PATH: /data/Template_quotes.docx
+      QUOTES_ALL_TEMPLATE_PATH: /data/Template_quotes_all.docx
     volumes:
       - ./volumes/word-template:/data
     networks:
