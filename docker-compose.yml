@@ -31,6 +31,7 @@ services:
       GENERIC_TIMEZONE: Europe/Moscow
     volumes:
       - n8n_data:/home/node/.n8n
+      - /mnt/filesdb:/mnt/filesdb:ro
     networks:
       - internal
     depends_on:
